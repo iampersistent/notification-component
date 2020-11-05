@@ -1,0 +1,30 @@
+{
+  "name": "iampersistent/notification-component",
+  "type": "library",
+  "description": "",
+  "keywords": [],
+  "license": "",
+  "config": {
+    "sort-packages": true
+  },
+  "require": {
+    "psr/container": "^1.0",
+    "php": "^7.4",
+    "symfony/notifier": "5.x-dev"
+  },
+  "require-dev": {
+  },
+  "minimum-stability": "dev",
+  "autoload": {
+    "psr-4": {
+      "Notification\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\Fixture\\": "tests/_support/Fixture",
+      "Tests\\Functional\\": "tests/functional",
+      "Tests\\Unit\\": "tests/unit"
+    }
+  }
+}
