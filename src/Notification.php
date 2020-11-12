@@ -13,7 +13,7 @@ abstract class Notification
     protected $context = [];
     /** @var \Symfony\Component\Notifier\NotifierInterface */
     protected $notifier;
-    /** @var \App\Notification\Recipient[] */
+    /** @var \Notification\Recipient[] */
     protected $recipients = [];
     /** @var string */
     protected $subject;

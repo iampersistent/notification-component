@@ -10,7 +10,9 @@
   "require": {
     "psr/container": "^1.0",
     "php": "^7.4",
-    "symfony/notifier": "5.x-dev"
+    "symfony/notifier": "5.x-dev",
+    "twig/inky-extra": "3.x-dev",
+    "twig/twig": "^3.0"
   },
   "require-dev": {
   },
