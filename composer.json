@@ -8,6 +8,7 @@
     "sort-packages": true
   },
   "require": {
+    "iampersistent/config-value-component": "dev-main",
     "psr/container": "^1.0",
     "php": "^7.4",
     "symfony/notifier": "v5.2.0-RC1",
@@ -15,6 +16,12 @@
     "twig/twig": "^3.0"
   },
   "require-dev": {
+  },
+  "repositories": {
+    "iampersistent/config-value-component": {
+      "type": "vcs",
+      "url": "git@github.com:iampersistent/config-value-component.git"
+    }
   },
   "minimum-stability": "dev",
   "autoload": {
