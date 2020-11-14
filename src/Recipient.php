@@ -13,7 +13,6 @@ final class Recipient implements EmailRecipientInterface, SmsRecipientInterface
 {
     use EmailRecipientTrait;
     use SmsRecipientTrait;
-    use SmsRecipientTrait;
 
     /** @var string */
     private $name;
@@ -22,6 +21,10 @@ final class Recipient implements EmailRecipientInterface, SmsRecipientInterface
     {
         if ('' === $email && '' === $phone) {
             throw new InvalidArgumentException(sprintf('"%s" needs an email or a phone but both cannot be empty.', static::class));
+        }
+
+        if (!empty($email) && !empty($name)) {
+            $email = "$name <$email>";
         }
 
         $this->email = $email;
