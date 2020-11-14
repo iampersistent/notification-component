@@ -14,22 +14,31 @@ final class Recipient implements EmailRecipientInterface, SmsRecipientInterface
     use EmailRecipientTrait;
     use SmsRecipientTrait;
 
+    /** @var string[] */
+    private $channels;
+    /** @var string */
+    private $email;
     /** @var string */
     private $name;
+    /** @var string */
+    private $phone;
 
-    public function __construct(string $email = '', string $name = '', string $phone = '')
+    public function __construct(array $channels = [])
     {
-        if ('' === $email && '' === $phone) {
-            throw new InvalidArgumentException(sprintf('"%s" needs an email or a phone but both cannot be empty.', static::class));
-        }
+        $this->channels = $channels;
+    }
 
-        if (!empty($email) && !empty($name)) {
-            $email = "$name <$email>";
-        }
+    public function getChannels(): array
+    {
+        return $this->channels;
+    }
 
+    public function setEmail(string $email): Recipient
+    {
         $this->email = $email;
-        $this->name = $name;
-        $this->phone = $phone;
+        $this->channels[] = 'email';
+
+        return $this;
     }
 
     public function getName(): string
@@ -37,5 +46,18 @@ final class Recipient implements EmailRecipientInterface, SmsRecipientInterface
         return $this->name;
     }
 
-    // Name <email@address.com>
+    public function setName(string $name): Recipient
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function setPhone(string $phone): Recipient
+    {
+        $this->phone = $phone;
+        $this->channels[] = 'sns';
+
+        return $this;
+    }
 }

@@ -16,7 +16,7 @@ final class NotifierFactory
         $channels = [];
         $emailConfig = (new GatherConfigValues)($container, 'notification_email');
         if (!empty($emailConfig)) {
-            $channels[] = (new EmailChannelFactory)($container, $emailConfig);
+            $channels['email'] = (new EmailChannelFactory)($container, $emailConfig);
         }
 
         return new Notifier($channels);

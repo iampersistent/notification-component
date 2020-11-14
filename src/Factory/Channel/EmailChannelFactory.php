@@ -13,7 +13,7 @@ final class EmailChannelFactory
         $transportFactory = "Notification\\Factory\\Transport\\Email\\{$emailConfig['transport']}Factory";
         $transport = (new $transportFactory)($container, $emailConfig);
         $messageBus = null;
-        $from = null;
+        $from = $emailConfig['from'] ?? null;
         $envelope = null;
 
         return new EmailChannel($transport, $messageBus, $from, $envelope);
