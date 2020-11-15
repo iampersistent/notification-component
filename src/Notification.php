@@ -3,11 +3,14 @@ declare(strict_types=1);
 
 namespace Notification;
 
+use Notification\Context\EmailContext;
 use Symfony\Component\Notifier\NotifierInterface;
 use Symfony\Component\Notifier\Notification\Notification as Communication;
 
 abstract class Notification
 {
+    /** @var \Notification\Recipient[] */
+    protected $bcc = [];
     /** @var string */
     protected $body;
     /** @var \Notification\Recipient[][] */
@@ -16,10 +19,14 @@ abstract class Notification
     protected $channels = [];
     /** @var array */
     protected $context = [];
+    /** @var \Notification\Recipient[] */
+    protected $from = [];
     /** @var \Symfony\Component\Notifier\NotifierInterface */
     protected $notifier;
     /** @var \Notification\Recipient[] */
     protected $recipients = [];
+    /** @var \Notification\Recipient[] */
+    protected $replyTo = [];
     /** @var string */
     protected $subject;
 
@@ -45,6 +52,11 @@ abstract class Notification
         return $this;
     }
 
+    public function getContext(): array
+    {
+        return $this->context;
+    }
+
     public function send()
     {
         if (!empty($this->channels)) {
@@ -61,6 +73,11 @@ abstract class Notification
         }
     }
 
+    public function getSubject(): string
+    {
+        return $this->subject;
+    }
+
     public function setSubject(string $subject): Notification
     {
         $this->subject = $subject;
@@ -69,11 +86,27 @@ abstract class Notification
         return $this;
     }
 
-    abstract protected function getEmailTemplate(): ?string;
+    abstract protected function getEmailHtmlTemplate(): ?string;
+
+    abstract protected function getEmailTextTemplate(): ?string;
+
+    private function createEmailContext(): EmailContext
+    {
+        return (new EmailContext())
+            ->setBcc($this->bcc)
+            ->setBodyContext($this->context)
+            ->setFrom($this->from)
+            ->setHtmlTemplate($this->getEmailHtmlTemplate())
+            ->setReplyTo($this->replyTo)
+            ->setSubject($this->subject)
+            ->setTextTemplate($this->getEmailTextTemplate());
+    }
 
     private function createCommunication(array $channels): Communication
     {
-        return (new Communication($this->subject, $channels));
+        $emailContext = $this->createEmailContext();
+
+        return (new EmailCommunication($emailContext, $channels));
     }
 
     private function getRecipientChannels(Recipient $recipient, array $channels = null): string
