@@ -12,8 +12,8 @@
     "iampersistent/config-value-component": "^1.0",
     "psr/container": "^1.0",
     "symfony/amazon-mailer": "^5.2@RC",
-    "symfony/mailer": "v5.2@RC",
-    "symfony/notifier": "v5.2@RC",
+    "symfony/mailer": "^5.2@RC",
+    "symfony/notifier": "^5.2@RC",
     "symfony/twig-bridge": "^5.2@RC",
     "twig/inky-extra": "^3.1",
     "twig/twig": "^3.0"
