@@ -8,15 +8,17 @@
     "sort-packages": true
   },
   "require": {
-    "php": "^7.4",
+    "php": "^7.4 | ^8.0",
     "iampersistent/config-value-component": "^1.0",
     "psr/container": "^1.0",
-    "symfony/amazon-mailer": "^5.2@RC",
-    "symfony/mailer": "^5.2@RC",
-    "symfony/notifier": "^5.2@RC",
-    "symfony/twig-bridge": "^5.2@RC",
+    "symfony/mailer": "^5.2",
+    "symfony/notifier": "^5.2",
+    "symfony/twig-bridge": "^5.2",
     "twig/inky-extra": "^3.1",
     "twig/twig": "^3.0"
+  },
+  "require-dev": {
+    "symfony/amazon-mailer": "^5.2"
   },
   "minimum-stability": "dev",
   "autoload": {
