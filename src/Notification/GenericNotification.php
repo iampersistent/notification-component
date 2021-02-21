@@ -7,6 +7,14 @@ use Notification\Notification;
 
 final class GenericNotification extends Notification
 {
+    public function setBody(string $body): Notification
+    {
+        $this->body = $body;
+        $this->context['body'] = $body;
+
+        return $this;
+    }
+
     protected function getEmailHtmlTemplate(): ?string
     {
         return 'generic';

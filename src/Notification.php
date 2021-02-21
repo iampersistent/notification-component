@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace Notification;
 
 use Notification\Context\EmailContext;
+use Symfony\Bridge\Twig\Mime\BodyRenderer;
+use Symfony\Component\Notifier\Notifier;
 use Symfony\Component\Notifier\NotifierInterface;
 use Symfony\Component\Notifier\Notification\Notification as Communication;
 
@@ -25,14 +27,18 @@ abstract class Notification
     protected $notifier;
     /** @var \Notification\Recipient[] */
     protected $recipients = [];
+    /** @var \Symfony\Bridge\Twig\Mime\BodyRenderer */
+    protected $renderer;
     /** @var \Notification\Recipient[] */
     protected $replyTo = [];
     /** @var string */
     protected $subject;
 
-    public function __construct(NotifierInterface $notifier)
+    public function __construct(Notifier $notifier, BodyRenderer $renderer, array $channels)
     {
+        $this->channels = $channels;
         $this->notifier = $notifier;
+        $this->renderer = $renderer;
     }
 
     public function addRecipient(Recipient $recipient, array $channels = null): Notification
@@ -106,7 +112,10 @@ abstract class Notification
     {
         $emailContext = $this->createEmailContext();
 
-        return (new EmailCommunication($emailContext, $channels));
+        $communication = (new EmailCommunication($emailContext, $channels));
+        $this->renderEmail($communication);
+
+        return $communication;
     }
 
     private function getRecipientChannels(Recipient $recipient, array $channels = null): string
@@ -116,5 +125,12 @@ abstract class Notification
         }
 
         return implode(',', $channels);
+    }
+
+    private function renderEmail(EmailCommunication $communication)
+    {
+        $email = $communication->getEmail();
+
+        $this->renderer->render($email);
     }
 }

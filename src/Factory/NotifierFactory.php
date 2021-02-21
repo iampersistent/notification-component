@@ -14,9 +14,14 @@ final class NotifierFactory
     public function __invoke(ContainerInterface $container): NotifierInterface
     {
         $channels = [];
-        $emailConfig = (new GatherConfigValues)($container, 'notification_email');
-        if (!empty($emailConfig)) {
-            $channels['email'] = (new EmailChannelFactory)($container, $emailConfig);
+        $channelList = $container->get('config')['notifications']['channels'];
+        foreach ($channelList as $channel => $config) {
+            $transport = $config['transport'] ?? "messenger.transport.{$channel}";
+            $name = "$channel/$transport";
+            $factory = $config['factory'] ?? 'Notification\\Factory\\Channel\\' . ucfirst($channel) . 'ChannelFactory';
+            $config = $config['config'] ?? "notification_$channel";
+
+            $channels[$channel] = (new $factory)($container, $config);
         }
 
         return new Notifier($channels);

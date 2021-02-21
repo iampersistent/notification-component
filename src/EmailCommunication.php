@@ -13,8 +13,8 @@ use Symfony\Component\Notifier\Recipient\EmailRecipientInterface;
 
 final class EmailCommunication extends Communication implements EmailNotificationInterface
 {
-    /** @var \Symfony\Component\Notifier\Message\EmailMessage */
-    private $message;
+    /** @var \Symfony\Bridge\Twig\Mime\TemplatedEmail */
+    private $email;
 
     public function __construct(EmailContext $emailContext, array $channels = [])
     {
@@ -25,7 +25,12 @@ final class EmailCommunication extends Communication implements EmailNotificatio
 
     public function asEmailMessage(EmailRecipientInterface $recipient, string $transport = null): ?EmailMessage
     {
-        return new EmailMessage($this->message);
+        return new EmailMessage($this->email);
+    }
+
+    public function getEmail(): TemplatedEmail
+    {
+        return $this->email;
     }
 
     private function createEmailMessage(EmailContext $emailContext)
@@ -57,6 +62,6 @@ final class EmailCommunication extends Communication implements EmailNotificatio
             $email->addTo($address);
         }
 
-        $this->message = $email;
+        $this->email = $email;
     }
 }
