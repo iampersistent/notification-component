@@ -3,19 +3,18 @@ declare(strict_types=1);
 
 namespace Notification;
 
-use Laminas\ServiceManager\Factory\FactoryInterface;
 use Netglue\PsrContainer\Messenger\Container\MessageBusStaticFactory;
+use Netglue\PsrContainer\Messenger\Container\Middleware\BusNameStampMiddlewareStaticFactory;
 use Netglue\PsrContainer\Messenger\Container\Middleware\MessageHandlerMiddlewareStaticFactory;
 use Netglue\PsrContainer\Messenger\Container\Middleware\MessageSenderMiddlewareStaticFactory;
 use Netglue\PsrContainer\Messenger\Container\TransportFactory;
 use Notification\Factory\Channel\EmailChannelFactory;
+use Notification\Factory\Transport\NotificationTransportFactory;
 use Notification\Factory\EmailBusLocatorFactory;
 use Notification\Factory\MessageHandlerFactory;
 use Notification\Factory\NotificationFactory;
 use Notification\Locator\EmailBusLocator;
-use Notification\Notification\GenericNotification;
-use Symfony\Component\Mailer\Messenger\MessageHandler;
-use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
+use Symfony\Component\Messenger\Transport\Serialization\PhpSerializer;
 use Symfony\Component\Mailer\Messenger\SendEmailMessage;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -49,24 +48,29 @@ class ConfigProvider
                 NotificationFactory::class,
             ],
             'factories'          => [
-                'messenger.bus.email'                    => new MessageBusStaticFactory(
+                'messenger.bus.email'                      => new MessageBusStaticFactory(
                     'messenger.bus.email'
                 ),
-                'messenger.bus.email.sender-middleware'  => new MessageSenderMiddlewareStaticFactory(
+                'messenger.bus.email.sender-middleware'    => new MessageSenderMiddlewareStaticFactory(
                     'messenger.bus.email'
                 ),
-                'messenger.bus.email.handler-middleware' => new MessageHandlerMiddlewareStaticFactory(
+                'messenger.bus.email.handler-middleware'   => new MessageHandlerMiddlewareStaticFactory(
                     'messenger.bus.email'
                 ),
-                'messenger.transport.email'              => [TransportFactory::class, 'messenger.transport.email'],
-                'messenger.handler.email'                => new MessageHandlerFactory('messenger.transport.email'),
-                EmailBusLocator::class                   =>
+                'messenger.bus.email.bus-stamp-middleware' => new BusNameStampMiddlewareStaticFactory(
+                    'messenger.bus.email'
+                ),
+                'messenger.transport.email'                => [TransportFactory::class, 'messenger.transport.email'],
+                'messenger.handler.email'                  => new MessageHandlerFactory('notification.transport.email'),
+                'notification.channel.email'               => new EmailChannelFactory('notification_channel_email'),
+                'notification.transport.email'             => new NotificationTransportFactory('notification_transport_email'),
+                EmailBusLocator::class                     =>
                     new EmailBusLocatorFactory(
                         'messenger.bus.email'
                     ),
-                EventDispatcherInterface::class          => \Notification\Factory\EventDispatcherFactory::class,
-                \Mezzio\Twig\TwigExtension::class        => \Mezzio\Twig\TwigExtensionFactory::class,
-                \Twig\Environment::class                 => \Mezzio\Twig\TwigEnvironmentFactory::class,
+                EventDispatcherInterface::class            => \Notification\Factory\EventDispatcherFactory::class,
+                \Mezzio\Twig\TwigExtension::class          => \Mezzio\Twig\TwigExtensionFactory::class,
+                \Twig\Environment::class                   => \Mezzio\Twig\TwigEnvironmentFactory::class,
             ],
         ];
     }
@@ -82,13 +86,14 @@ class ConfigProvider
                     'allows_zero_handlers' => true,
                     'handler_locator'      => EmailBusLocator::class,
                     'handlers'             => [
-                        SendEmailMessage::class => ['messenger.transport.email'],
+                        SendEmailMessage::class => ['messenger.handler.email'],
                     ],
                     'middleware'           => [
+                        'messenger.bus.email.bus-stamp-middleware',
                         'messenger.bus.email.sender-middleware',
                         'messenger.bus.email.handler-middleware',
                     ],
-                    'routes' => [
+                    'routes'               => [
                         '*' => ['messenger.transport.email'],
                     ],
                 ],
@@ -102,7 +107,7 @@ class ConfigProvider
         return [
             'messenger.transport.email' => [
                 'dsn'            => 'doctrine://dbal-default?queue_name=email',
-                'serializer'     => SerializerInterface::class, // custom serializer service
+                'serializer'     => PhpSerializer::class,
                 'options'        => [
                 ],
                 'retry_strategy' => [
@@ -125,9 +130,10 @@ class ConfigProvider
             ],
             'channels' => [
                 'email' => [
-                    'config'    => 'notification_email',
-                    'factory'   => EmailChannelFactory::class,
-                    'transport' => 'messenger.transport.email',
+                    'channel'   => 'notification.channel.email',
+                    'message_bus' => 'messenger.bus.email',
+                    'messenger' => 'messenger.transport.email',
+                    'transport' => 'notification.transport.email',
                 ],
             ],
         ];

@@ -25,7 +25,7 @@ final class NotificationFactory implements AbstractFactoryInterface
         }
         $channels = [];
         foreach ($channelNames as $channel) {
-            $channels[$channel] = $channel . '/' . $config['channels'][$channel]['transport'];
+            $channels[$channel] = $channel . '/' . $config['channels'][$channel]['messenger'];
         }
         $notifier = $container->get(NotifierInterface::class);
         $renderer = $container->get(BodyRenderer::class);
