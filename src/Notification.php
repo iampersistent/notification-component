@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Notification;
 
 use Notification\Context\EmailContext;
-use Notification\Context\NotificationContext;
 use Symfony\Bridge\Twig\Mime\BodyRenderer;
 use Symfony\Component\Notifier\Notifier;
 use Symfony\Component\Notifier\Notification\Notification as Communication;
@@ -48,14 +47,6 @@ abstract class Notification
         $this->renderer = $renderer;
     }
 
-    public function dispatch(NotificationContext $context, array $recipientChannels)
-    {
-        $this->sortRecipientChannels($recipientChannels);
-        $this->handleContext($context);
-
-        $this->send();
-    }
-
     public function setBody(string $body): Notification
     {
         $this->body = $body;
@@ -69,8 +60,10 @@ abstract class Notification
         return $this->context;
     }
 
-    public function send()
+    public function send(array $recipientChannels)
     {
+        $this->sortRecipientChannels($recipientChannels);
+
         foreach ($this->getAllowedChannels() as $channel) {
             if (!empty($this->channelRecipients[$channel])) {
                 $communication = $this->createCommunication($channel);
@@ -88,7 +81,6 @@ abstract class Notification
 
     abstract protected function getEmailHtmlTemplate(): ?string;
     abstract protected function getEmailTextTemplate(): ?string;
-    abstract protected function handleContext(NotificationContext $notificationContext);
 
     protected function getAllowedChannels(): array
     {
