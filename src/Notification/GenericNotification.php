@@ -3,16 +3,16 @@ declare(strict_types=1);
 
 namespace Notification\Notification;
 
+use Notification\Context\NotificationContext;
 use Notification\Notification;
 
 final class GenericNotification extends Notification
 {
-    public function setBody(string $body): Notification
+    protected function getAllowedChannels(): array
     {
-        $this->body = $body;
-        $this->context['body'] = $body;
-
-        return $this;
+        return [
+            'email',
+        ];
     }
 
     protected function getEmailHtmlTemplate(): ?string
@@ -23,5 +23,13 @@ final class GenericNotification extends Notification
     protected function getEmailTextTemplate(): ?string
     {
         return null;
+    }
+
+    protected function handleContext(NotificationContext $notificationContext)
+    {
+        $this->context = [
+            'body'    => $notificationContext->get('body'),
+        ];
+        $this->setSubject($notificationContext->get('subject'));
     }
 }

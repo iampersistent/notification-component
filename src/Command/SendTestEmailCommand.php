@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace Notification\Command;
 
+use Notification\Context\NotificationContext;
 use Notification\Notification\GenericNotification;
 use Notification\Recipient;
+use Notification\RecipientChannels;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -25,8 +27,7 @@ final class SendTestEmailCommand extends Command
 
     protected function configure()
     {
-        $this
-            ->addArgument('email', InputArgument::REQUIRED);
+        $this->addArgument('email', InputArgument::REQUIRED);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -35,12 +36,13 @@ final class SendTestEmailCommand extends Command
 
         $recipient = (new Recipient())
             ->setEmail($email);
+        $recipientChannels = (new RecipientChannels())
+            ->addRecipientsToChannel('email', $recipient);
+        $context = (new NotificationContext())
+            ->set('subject', 'Test Email')
+            ->set('body', 'This is a test');
 
-        $this->notification
-            ->setSubject('Test Email')
-            ->setBody('This is a test')
-            ->addRecipient($recipient)
-            ->send();
+        $this->notification->dispatch($context, [$recipientChannels]);
 
         return Command::SUCCESS;
     }

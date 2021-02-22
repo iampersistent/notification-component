@@ -30,6 +30,6 @@ final class NotificationFactory implements AbstractFactoryInterface
         $notifier = $container->get(NotifierInterface::class);
         $renderer = $container->get(BodyRenderer::class);
 
-        return new $requestedName($notifier, $renderer, $channels);
+        return new $requestedName($notifier, $renderer, $channels, []);
     }
 }
