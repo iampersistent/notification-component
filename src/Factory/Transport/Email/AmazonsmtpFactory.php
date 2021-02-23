@@ -8,7 +8,7 @@ use Psr\Container\ContainerInterface;
 use Symfony\Component\Mailer\Bridge\Amazon\Transport\SesSmtpTransport;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-final class AmazonSMTPFactory
+final class AmazonsmtpFactory
 {
     /** @var string */
     private $id;

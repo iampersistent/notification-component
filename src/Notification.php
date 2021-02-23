@@ -98,7 +98,7 @@ abstract class Notification
     protected function setSubject(string $subject): Notification
     {
         $this->subject = $subject;
-        $this->context['_subject'] = $subject;
+        $this->context->set('_subject', $subject);
 
         return $this;
     }
