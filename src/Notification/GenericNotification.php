@@ -7,14 +7,12 @@ use Notification\Notification;
 
 final class GenericNotification extends Notification
 {
-    public function dispatch(string $subject, string $body, array $recipients)
+    public function dispatch(string $subject, string $body)
     {
-        $this->context = [
-            'body'    => $body,
-        ];
+        $this->context->set('body', $body);
         $this->setSubject($subject);
 
-        $this->send($recipients);
+        $this->send();
     }
 
     protected function getAllowedChannels(): array

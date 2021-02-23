@@ -16,24 +16,25 @@ abstract class Notification
     protected $body;
     /** @var [] */
     protected $communicationFactories;
-    /** @var \Notification\Recipient[] */
-    protected $channelRecipients = [];
     /** @var string[] */
-    protected array $channels = [];
-    /** @var array */
-    protected $context = [];
+    protected $channels = [];
+    /** @var \Notification\Context\NotificationContext */
+    protected $context;
     /** @var \Notification\Recipient[] */
     protected $from = [];
     /** @var \Symfony\Component\Notifier\NotifierInterface */
     protected $notifier;
-    /** @var \Notification\Recipient[] */
-    protected $recipients = [];
     /** @var \Symfony\Bridge\Twig\Mime\BodyRenderer */
     protected $renderer;
     /** @var \Notification\Recipient[] */
     protected $replyTo = [];
     /** @var string */
     protected $subject;
+
+    /** @var \Notification\Recipient[][] */
+    private $channelRecipients = [];
+    /** @var \Notification\RecipientChannels[] */
+    private $recipientChannels = [];
 
     public function __construct(
         Notifier $notifier,
@@ -43,6 +44,7 @@ abstract class Notification
     ) {
         $this->channels = $channels;
         $this->communicationFactories = $communicationFactories;
+        $this->context = new NotificationContext();
         $this->notifier = $notifier;
         $this->renderer = $renderer;
     }
@@ -55,12 +57,19 @@ abstract class Notification
         return $this;
     }
 
-    public function getContext(): array
+    public function getContext(): NotificationContext
     {
         return $this->context;
     }
 
-    public function send(array $recipientChannels)
+    public function setRecipientChannels(array $recipientChannels)
+    {
+        $this->recipientChannels = $recipientChannels;
+
+        return $this;
+    }
+
+    public function send()
     {
         $this->sortRecipientChannels($recipientChannels);
 
@@ -95,20 +104,11 @@ abstract class Notification
         return $this;
     }
 
-    private function addRecipient(Recipient $recipient, array $channels = null): Notification
-    {
-        $channelKey = $this->getRecipientChannels($recipient, $channels);
-        $this->channelRecipients[$channelKey][] = $recipient;
-        $this->recipients[] = $recipient;
-
-        return $this;
-    }
-
     private function createEmailContext(): EmailContext
     {
         return (new EmailContext())
             ->setBcc($this->bcc)
-            ->setBodyContext($this->context)
+            ->setBodyContext($this->context->toArray())
             ->setFrom($this->from)
             ->setHtmlTemplate($this->getEmailHtmlTemplate())
             ->setReplyTo($this->replyTo)

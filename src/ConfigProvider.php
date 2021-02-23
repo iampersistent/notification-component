@@ -3,12 +3,18 @@ declare(strict_types=1);
 
 namespace Notification;
 
+use Mezzio\Twig\TwigEnvironmentFactory;
+use Mezzio\Twig\TwigExtension;
+use Mezzio\Twig\TwigExtensionFactory;
 use Netglue\PsrContainer\Messenger\Container\MessageBusStaticFactory;
 use Netglue\PsrContainer\Messenger\Container\Middleware\BusNameStampMiddlewareStaticFactory;
 use Netglue\PsrContainer\Messenger\Container\Middleware\MessageHandlerMiddlewareStaticFactory;
 use Netglue\PsrContainer\Messenger\Container\Middleware\MessageSenderMiddlewareStaticFactory;
 use Netglue\PsrContainer\Messenger\Container\TransportFactory;
+use Notification\Command\SendTestEmailCommand;
 use Notification\Factory\Channel\EmailChannelFactory;
+use Notification\Factory\EventDispatcherFactory;
+use Notification\Factory\NotifierFactory;
 use Notification\Factory\Transport\NotificationTransportFactory;
 use Notification\Factory\EmailBusLocatorFactory;
 use Notification\Factory\MessageHandlerFactory;
@@ -16,7 +22,9 @@ use Notification\Factory\NotificationFactory;
 use Notification\Locator\EmailBusLocator;
 use Symfony\Component\Messenger\Transport\Serialization\PhpSerializer;
 use Symfony\Component\Mailer\Messenger\SendEmailMessage;
+use Symfony\Component\Notifier\Notifier;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Twig\Environment;
 
 class ConfigProvider
 {
@@ -36,7 +44,7 @@ class ConfigProvider
     {
         return [
             'commands' => [
-                'notification:send-test-email' => \Notification\Command\SendTestEmailCommand::class,
+                'notification:send-test-email' => SendTestEmailCommand::class,
             ],
         ];
     }
@@ -63,14 +71,17 @@ class ConfigProvider
                 'messenger.transport.email'                => [TransportFactory::class, 'messenger.transport.email'],
                 'messenger.handler.email'                  => new MessageHandlerFactory('notification.transport.email'),
                 'notification.channel.email'               => new EmailChannelFactory('notification_channel_email'),
-                'notification.transport.email'             => new NotificationTransportFactory('notification_transport_email'),
+                'notification.transport.email'             => new NotificationTransportFactory(
+                    'notification_transport_email'
+                ),
                 EmailBusLocator::class                     =>
                     new EmailBusLocatorFactory(
                         'messenger.bus.email'
                     ),
-                EventDispatcherInterface::class            => \Notification\Factory\EventDispatcherFactory::class,
-                \Mezzio\Twig\TwigExtension::class          => \Mezzio\Twig\TwigExtensionFactory::class,
-                \Twig\Environment::class                   => \Mezzio\Twig\TwigEnvironmentFactory::class,
+                EventDispatcherInterface::class            => EventDispatcherFactory::class,
+                TwigExtension::class                       => TwigExtensionFactory::class,
+                Environment::class                         => TwigEnvironmentFactory::class,
+                Notifier::class                            => NotifierFactory::class,
             ],
         ];
     }
@@ -130,10 +141,10 @@ class ConfigProvider
             ],
             'channels' => [
                 'email' => [
-                    'channel'   => 'notification.channel.email',
+                    'channel'     => 'notification.channel.email',
                     'message_bus' => 'messenger.bus.email',
-                    'messenger' => 'messenger.transport.email',
-                    'transport' => 'notification.transport.email',
+                    'messenger'   => 'messenger.transport.email',
+                    'transport'   => 'notification.transport.email',
                 ],
             ],
         ];

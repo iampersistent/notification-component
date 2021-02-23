@@ -39,7 +39,9 @@ final class SendTestEmailCommand extends Command
         $recipientChannels = (new RecipientChannels())
             ->addRecipientsToChannel('email', $recipient);
 
-        $this->notification->dispatch('Test Email', 'This is a test', [$recipientChannels]);
+        $this->notification
+            ->setRecipientChannels([$recipientChannels])
+            ->dispatch('Test Email', 'This is a test');
 
         return Command::SUCCESS;
     }

@@ -20,7 +20,8 @@ final class NotificationTransportFactory
     {
         $config = (new GatherConfigValues)($container, $this->config);
 
-        $transportFactory = 'Notification\\Factory\\Transport\\Email\\' . $config['type'] . 'Factory';
+        $type = ucfirst(strtolower($config['type']));
+        $transportFactory = "Notification\\Factory\\Transport\\Email\\{$type}Factory";
 
         return (new $transportFactory($this->config))($container);
     }
