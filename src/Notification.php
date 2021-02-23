@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Notification;
 
 use Notification\Context\EmailContext;
+use Notification\Context\NotificationContext;
 use Symfony\Bridge\Twig\Mime\BodyRenderer;
 use Symfony\Component\Notifier\Notifier;
 use Symfony\Component\Notifier\Notification\Notification as Communication;
