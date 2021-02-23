@@ -32,8 +32,6 @@ abstract class Notification
     /** @var string */
     protected $subject;
 
-    /** @var \Notification\Recipient[][] */
-    private $channelRecipients = [];
     /** @var \Notification\RecipientChannels[] */
     private $recipientChannels = [];
 
@@ -72,12 +70,12 @@ abstract class Notification
 
     public function send()
     {
-        $this->sortRecipientChannels($recipientChannels);
+        $channels = $this->getChannels();
 
         foreach ($this->getAllowedChannels() as $channel) {
-            if (!empty($this->channelRecipients[$channel])) {
+            if (!empty($channels[$channel])) {
                 $communication = $this->createCommunication($channel);
-                foreach ($this->channelRecipients[$channel] as $recipient) {
+                foreach ($channels[$channel] as $recipient) {
                     $this->notifier->send($communication, $recipient);
                 }
             }
@@ -127,15 +125,6 @@ abstract class Notification
         return $communication;
     }
 
-    private function getRecipientChannels(Recipient $recipient, array $channels = null): string
-    {
-        if (empty($channels)) {
-            $channels = $recipient->getChannels();
-        }
-
-        return implode(',', $channels);
-    }
-
     private function renderEmail(EmailCommunication $communication)
     {
         $email = $communication->getEmail();
@@ -143,16 +132,16 @@ abstract class Notification
         $this->renderer->render($email);
     }
 
-    /**
-     * @param \Notification\RecipientChannels[] $recipientChannels
-     */
-    private function sortRecipientChannels(array $recipientChannels)
+    private function getChannels(): array
     {
-        foreach ($recipientChannels as $recipientChannel) {
+        $channels = [];
+        foreach ($this->recipientChannels as $recipientChannel) {
             foreach ($this->getAllowedChannels() as $channel) {
-                $this->channelRecipients[$channel] =
-                    array_merge($this->channelRecipients, $recipientChannel->getForChannel($channel));
+                $channels[$channel] =
+                    array_merge($channels, $recipientChannel->getForChannel($channel));
             }
         }
+
+        return $channels;
     }
 }
