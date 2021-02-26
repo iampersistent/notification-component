@@ -13,6 +13,8 @@ use Netglue\PsrContainer\Messenger\Container\Middleware\MessageSenderMiddlewareS
 use Netglue\PsrContainer\Messenger\Container\TransportFactory;
 use Notification\Command\SendTestEmailCommand;
 use Notification\Factory\Channel\EmailChannelFactory;
+use Notification\Factory\Communication\EmailCommunicationFactory;
+use Notification\Factory\Context\EmailContextFactory;
 use Notification\Factory\EventDispatcherFactory;
 use Notification\Factory\NotifierFactory;
 use Notification\Factory\Transport\NotificationTransportFactory;
@@ -141,10 +143,18 @@ class ConfigProvider
             ],
             'channels' => [
                 'email' => [
-                    'channel'     => 'notification.channel.email',
-                    'message_bus' => 'messenger.bus.email',
-                    'messenger'   => 'messenger.transport.email',
-                    'transport'   => 'notification.transport.email',
+                    'channel'               => 'notification.channel.email',
+                    'communication_factory' => EmailCommunicationFactory::class,
+                    'message_bus'           => 'messenger.bus.email',
+                    'messenger'             => 'messenger.transport.email',
+                    'transport'             => 'notification.transport.email',
+                ],
+            ],
+            'context'  => [
+                'email' => [
+                    'factory' => EmailContextFactory::class,
+                    'data'    => [
+                    ],
                 ],
             ],
         ];

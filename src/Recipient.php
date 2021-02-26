@@ -56,7 +56,7 @@ final class Recipient implements EmailRecipientInterface, SmsRecipientInterface
     public function setPhone(string $phone): Recipient
     {
         $this->phone = $phone;
-        $this->channels[] = 'sns';
+        $this->channels[] = 'sms';
 
         return $this;
     }

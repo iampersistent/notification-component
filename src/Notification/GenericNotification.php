@@ -10,8 +10,11 @@ final class GenericNotification extends Notification
     public function dispatch(string $subject, string $body)
     {
         $this->context->set('body', $body);
-        $this->setSubject($subject);
-
+        /** @var \Notification\Context\EmailContext $emailContext */
+        $emailContext = $this->context->getMeta('email');
+        $emailContext
+            ->setHtmlTemplate('generic')
+            ->setSubject($subject);
         $this->send();
     }
 
@@ -20,15 +23,5 @@ final class GenericNotification extends Notification
         return [
             'email',
         ];
-    }
-
-    protected function getEmailHtmlTemplate(): ?string
-    {
-        return 'generic';
-    }
-
-    protected function getEmailTextTemplate(): ?string
-    {
-        return null;
     }
 }

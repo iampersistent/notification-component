@@ -7,10 +7,13 @@ final class NotificationContext
 {
     /** @var array */
     private $data;
+    /** @var array */
+    private $meta;
 
-    public function __construct(array $data = [])
+    public function __construct(array $data = [], array $meta = [])
     {
         $this->data = $data;
+        $this->meta = $meta;
     }
 
     public function get(string $key)
@@ -18,9 +21,21 @@ final class NotificationContext
         return $this->data[$key] ?? null;
     }
 
+    public function getMeta(string $key)
+    {
+        return $this->meta[$key] ?? null;
+    }
+
     public function set(string $key, $value): self
     {
         $this->data[$key] = $value;
+
+        return $this;
+    }
+
+    public function setMeta(string $key, $meta): self
+    {
+        $this->meta[$key] = $meta;
 
         return $this;
     }
