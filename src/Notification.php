@@ -10,10 +10,10 @@ use Symfony\Component\Notifier\Notification\Notification as Communication;
 
 abstract class Notification
 {
+    /** @var \Notification\Context\NotificationContext */
+    protected $context;
     /** @var string[] */
     private $channels = [];
-    /** @var \Notification\Context\NotificationContext */
-    private $context;
     /** @var CommunicationFactoryInterface[] */
     private $communicationFactories;
     /** @var \Symfony\Component\Notifier\NotifierInterface */
@@ -38,7 +38,14 @@ abstract class Notification
         return $this->context;
     }
 
-    public function setRecipientChannels(array $recipientChannels)
+    public function addRecipientChannel(RecipientChannels $recipientChannels): self
+    {
+        $this->recipientChannels[] = $recipientChannels;
+
+        return $this;
+    }
+
+    public function setRecipientChannels(array $recipientChannels): self
     {
         $this->recipientChannels = $recipientChannels;
 
@@ -49,7 +56,7 @@ abstract class Notification
     {
         $channels = $this->getChannels();
 
-        foreach ($this->getAllowedChannels() as $channel) {
+        foreach ($this->getAllowedChannels() as $channel => $transport) {
             if (!empty($channels[$channel])) {
                 $communication = $this->createCommunication($channel);
                 foreach ($channels[$channel] as $recipient) {
@@ -74,10 +81,11 @@ abstract class Notification
     private function getChannels(): array
     {
         $channels = [];
-        foreach ($this->recipientChannels as $recipientChannel) {
-            foreach ($this->getAllowedChannels() as $channel) {
+        foreach ($this->getAllowedChannels() as $channel => $transport) {
+            $channels[$channel] = [];
+            foreach ($this->recipientChannels as $recipientChannel) {
                 $channels[$channel] =
-                    array_merge($channels, $recipientChannel->getForChannel($channel));
+                    array_merge($channels[$channel], $recipientChannel->getForChannel($channel));
             }
         }
 

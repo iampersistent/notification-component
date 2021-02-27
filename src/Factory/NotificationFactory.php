@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Notification\Factory;
 
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
-use Notification\Context\EmailContext;
 use Notification\Context\NotificationContext;
 use Notification\Notification;
 use Psr\Container\ContainerInterface;
