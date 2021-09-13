@@ -72,7 +72,7 @@ class ConfigProvider
                 ),
                 'messenger.transport.email'                => [TransportFactory::class, 'messenger.transport.email'],
                 'messenger.handler.email'                  => new MessageHandlerFactory('notification.transport.email'),
-                'notification.channel.email'               => new EmailChannelFactory('notification_channel_email'),
+                'notification.channel.email'               => new EmailChannelFactory('notification.channel.email'),
                 'notification.transport.email'             => new NotificationTransportFactory(
                     'notification_transport_email'
                 ),
@@ -141,7 +141,7 @@ class ConfigProvider
                     'email',
                 ],
             ],
-            'channels' => [
+            'channel' => [
                 'email' => [
                     'channel'               => 'notification.channel.email',
                     'communication_factory' => EmailCommunicationFactory::class,

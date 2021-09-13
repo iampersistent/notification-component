@@ -36,7 +36,7 @@ class NotificationFactory implements AbstractFactoryInterface
         }
         $channels = [];
         foreach ($channelNames as $channel) {
-            $channels[$channel] = $channel . '/' . $config['channels'][$channel]['messenger'];
+            $channels[$channel] = $channel . '/' . $config['channel'][$channel]['messenger'];
         }
 
         return $channels;
