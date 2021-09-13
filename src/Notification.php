@@ -56,10 +56,10 @@ abstract class Notification
     {
         $channels = $this->getChannels();
 
-        foreach ($this->getAllowedChannels() as $channel => $transport) {
+        foreach ($channels as $channel => $recipients) {
             if (!empty($channels[$channel])) {
                 $communication = $this->createCommunication($channel);
-                foreach ($channels[$channel] as $recipient) {
+                foreach ($recipients as $recipient) {
                     $this->notifier->send($communication, $recipient);
                 }
             }
@@ -81,7 +81,7 @@ abstract class Notification
     private function getChannels(): array
     {
         $channels = [];
-        foreach ($this->getAllowedChannels() as $channel => $transport) {
+        foreach ($this->getAllowedChannels() as $channel) {
             $channels[$channel] = [];
             foreach ($this->recipientChannels as $recipientChannel) {
                 $channels[$channel] =

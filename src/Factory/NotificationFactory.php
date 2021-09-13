@@ -18,10 +18,10 @@ class NotificationFactory implements AbstractFactoryInterface
 
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $config = $container->get('config')['notifications'];
+        $config = $container->get('config')['notification'];
 
         $channels = $this->getChannels($requestedName, $config);
-        $communicationFactories = $this->getCommunicationFactories($container, $config['channels']);
+        $communicationFactories = $this->getCommunicationFactories($container, $config['channel']);
         $context = $this->getContext($container, $config['context']);
         $notifier = $container->get(NotifierInterface::class);
 
@@ -30,9 +30,9 @@ class NotificationFactory implements AbstractFactoryInterface
 
     protected function getChannels(string $requestedName, array $config): array
     {
-        $channelNames = $config['default']['channels'] ?? ['email'];
+        $channelNames = array_keys($config['channel']) ?? ['email'];
         if (isset($config[$requestedName])) {
-            $channelNames = $config[$requestedName]['channels'] ?? $channelNames;
+            $channelNames = $config[$requestedName]['channel'] ?? $channelNames;
         }
         $channels = [];
         foreach ($channelNames as $channel) {

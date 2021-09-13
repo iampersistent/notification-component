@@ -35,7 +35,7 @@ class ConfigProvider
         return [
             'dependencies'  => $this->getDependencies(),
             'laminas-cli'   => $this->getConsoleConfig(),
-            'notifications' => $this->getNotifications(),
+            'notification'  => $this->getNotifications(),
             'symfony'       => [
                 'messenger' => $this->getMessenger(),
             ],
@@ -74,7 +74,7 @@ class ConfigProvider
                 'messenger.handler.email'                  => new MessageHandlerFactory('notification.transport.email'),
                 'notification.channel.email'               => new EmailChannelFactory('notification.channel.email'),
                 'notification.transport.email'             => new NotificationTransportFactory(
-                    'notification_transport_email'
+                    'notification.transport.email'
                 ),
                 EmailBusLocator::class                     =>
                     new EmailBusLocatorFactory(
@@ -136,11 +136,6 @@ class ConfigProvider
     private function getNotifications(): array
     {
         return [
-            'default'  => [
-                'channels' => [
-                    'email',
-                ],
-            ],
             'channel' => [
                 'email' => [
                     'channel'               => 'notification.channel.email',
