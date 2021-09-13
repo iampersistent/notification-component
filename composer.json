@@ -8,8 +8,8 @@
     "sort-packages": true
   },
   "require": {
-    "php": "^7.4 | ^8.0",
-    "iampersistent/config-value-component": "^1.0",
+    "php": "^8.0",
+    "iampersistent/config-value-component": "^1.2",
     "laminas/laminas-servicemanager": "^3.6",
     "mezzio/mezzio-twigrenderer": "^2.6",
     "netglue/laminas-messenger": "1.0.1",
